@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -31,7 +32,22 @@ func readInput(file string) []int {
 	return input
 }
 
+func part1(input []int) int {
+	increase := 0
+	for i := 1; i < len(input); i++ {
+		if input[i-1] < input[i] {
+			increase++
+		}
+	}
+
+	return increase
+}
+
 func main() {
-	input := readInput("./testinput1")
-	fmt.Println(input)
+	if len(os.Args) < 2 {
+		log.Fatal("Please provide a file name as argument")
+	}
+
+	input := readInput(os.Args[1])
+	fmt.Println("Part 1:", part1(input))
 }
