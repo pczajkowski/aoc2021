@@ -47,7 +47,7 @@ func part2(input []int) []int {
 	var measurements []int
 	index := 0
 	for i, value := range input {
-		if len(input[i:]) > 2 {
+		if i+2 < len(input) {
 			measurements = append(measurements, value)
 			measurements[index] += input[i+1]
 			measurements[index] += input[i+2]
