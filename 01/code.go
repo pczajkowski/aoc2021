@@ -43,6 +43,21 @@ func part1(input []int) int {
 	return increase
 }
 
+func part2(input []int) []int {
+	var measurements []int
+	index := 0
+	for i, value := range input {
+		if len(input[i:]) > 2 {
+			measurements = append(measurements, value)
+			measurements[index] += input[i+1]
+			measurements[index] += input[i+2]
+			index++
+		}
+	}
+
+	return measurements
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
@@ -50,4 +65,5 @@ func main() {
 
 	input := readInput(os.Args[1])
 	fmt.Println("Part 1:", part1(input))
+	fmt.Println("Part 2:", part1(part2(input)))
 }
