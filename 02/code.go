@@ -67,6 +67,26 @@ func part1(moves []move) int {
 	return position * depth
 }
 
+func part2(input []move) int {
+	position := 0
+	depth := 0
+	aim := 0
+
+	for _, move := range input {
+		switch move.direction {
+		case "forward":
+			position += move.steps
+			depth += aim * move.steps
+		case "down":
+			aim += move.steps
+		case "up":
+			aim -= move.steps
+		}
+	}
+
+	return position * depth
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("No input file specified")
@@ -74,4 +94,5 @@ func main() {
 
 	moves := readInput(os.Args[1])
 	fmt.Println("Part 1:", part1(moves))
+	fmt.Println("Part 2:", part2(moves))
 }
