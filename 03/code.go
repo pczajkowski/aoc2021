@@ -55,11 +55,100 @@ func part1(lines []string) int64 {
 	return gammaNumber * epsilonNumber
 }
 
+func keepWith(slice []string, index int, char byte) []string {
+	var newSlice []string
+	for _, line := range slice {
+		if line[index] == char {
+			newSlice = append(newSlice, line)
+		}
+	}
+
+	return newSlice
+}
+
+func filterMost(lines []string, values []byte) string {
+	for i := 0; i < len(lines[0]); i++ {
+		if len(lines) == 1 {
+			break
+		}
+
+		counts := []int{0, 0}
+		for _, line := range lines {
+			if line[i] == values[0] {
+				counts[0]++
+			} else {
+				counts[1]++
+			}
+		}
+
+		if counts[0] > counts[1] {
+			lines = keepWith(lines, i, values[0])
+		} else {
+			lines = keepWith(lines, i, values[1])
+		}
+	}
+
+	if len(lines) == 1 {
+		return lines[0]
+	}
+
+	return ""
+}
+
+func filterLeast(lines []string, values []byte) string {
+	for i := 0; i < len(lines[0]); i++ {
+		if len(lines) == 1 {
+			break
+		}
+
+		counts := []int{0, 0}
+		for _, line := range lines {
+			if line[i] == values[0] {
+				counts[0]++
+			} else {
+				counts[1]++
+			}
+		}
+
+		if counts[0] < counts[1] {
+			lines = keepWith(lines, i, values[0])
+		} else {
+			lines = keepWith(lines, i, values[1])
+		}
+	}
+
+	if len(lines) == 1 {
+		return lines[0]
+	}
+
+	return ""
+}
+
+func part2(lines []string) int64 {
+	generator := make([]string, len(lines))
+	copy(generator, lines)
+	scrubber := make([]string, len(lines))
+	copy(scrubber, lines)
+
+	generatorNumber, err := strconv.ParseInt(filterMost(generator, []byte{'0', '1'}), 2, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	scrubberNumber, err := strconv.ParseInt(filterLeast(scrubber, []byte{'1', '0'}), 2, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return generatorNumber * scrubberNumber
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("You need to provide path to input file!")
 	}
 
 	lines := readInput(os.Args[1])
-	fmt.Println(part1(lines))
+	fmt.Println("Part1: ", part1(lines))
+	fmt.Println("Part2: ", part2(lines))
 }
