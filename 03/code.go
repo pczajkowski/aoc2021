@@ -66,36 +66,23 @@ func keepWith(slice []string, index int, char byte) []string {
 	return newSlice
 }
 
-func filterMost(lines []string, values []byte) string {
-	for i := 0; i < len(lines[0]); i++ {
-		if len(lines) == 1 {
-			break
-		}
-
-		counts := []int{0, 0}
-		for _, line := range lines {
-			if line[i] == values[0] {
-				counts[0]++
-			} else {
-				counts[1]++
-			}
-		}
-
-		if counts[0] > counts[1] {
-			lines = keepWith(lines, i, values[0])
-		} else {
-			lines = keepWith(lines, i, values[1])
-		}
+func most(lines []string, values []byte, counts []int, index int) []string {
+	if counts[0] > counts[1] {
+		return keepWith(lines, index, values[0])
 	}
 
-	if len(lines) == 1 {
-		return lines[0]
-	}
-
-	return ""
+	return keepWith(lines, index, values[1])
 }
 
-func filterLeast(lines []string, values []byte) string {
+func least(lines []string, values []byte, counts []int, index int) []string {
+	if counts[0] < counts[1] {
+		return keepWith(lines, index, values[0])
+	}
+
+	return keepWith(lines, index, values[1])
+}
+
+func filter(lines []string, values []byte, decision func([]string, []byte, []int, int) []string) string {
 	for i := 0; i < len(lines[0]); i++ {
 		if len(lines) == 1 {
 			break
@@ -110,11 +97,7 @@ func filterLeast(lines []string, values []byte) string {
 			}
 		}
 
-		if counts[0] < counts[1] {
-			lines = keepWith(lines, i, values[0])
-		} else {
-			lines = keepWith(lines, i, values[1])
-		}
+		lines = decision(lines, values, counts, i)
 	}
 
 	if len(lines) == 1 {
@@ -130,12 +113,12 @@ func part2(lines []string) int64 {
 	scrubber := make([]string, len(lines))
 	copy(scrubber, lines)
 
-	generatorNumber, err := strconv.ParseInt(filterMost(generator, []byte{'0', '1'}), 2, 64)
+	generatorNumber, err := strconv.ParseInt(filter(generator, []byte{'0', '1'}, most), 2, 64)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	scrubberNumber, err := strconv.ParseInt(filterLeast(scrubber, []byte{'1', '0'}), 2, 64)
+	scrubberNumber, err := strconv.ParseInt(filter(scrubber, []byte{'1', '0'}, least), 2, 64)
 	if err != nil {
 		log.Fatal(err)
 	}
