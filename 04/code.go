@@ -117,20 +117,21 @@ func checkWinner(board [][]Number, row int, col int) bool {
 }
 
 func mark(boards [][][]Number, number int) *[][]Number {
+	var winner *[][]Number
 	for _, board := range boards {
 		for i, row := range board {
 			for j, _ := range row {
 				if row[j].Val == number {
 					row[j].Marked = true
 					if checkWinner(board, i, j) {
-						return &board
+						winner = &board
 					}
 				}
 			}
 		}
 	}
 
-	return nil
+	return winner
 }
 
 func calculateBoard(board *[][]Number) int {
@@ -161,6 +162,53 @@ func part1(boards [][][]Number, numbers []int) int {
 	return lastNumber * sumOfUnmarkedNumbers
 }
 
+func isWinner(boardIndex int, winners []int) bool {
+	for _, winner := range winners {
+		if boardIndex == winner {
+			return true
+		}
+	}
+
+	return false
+}
+
+func mark2(boards [][][]Number, number int, winners []int) (bool, []int) {
+	newWinner := false
+	for x, board := range boards {
+		if isWinner(x, winners) {
+			continue
+		}
+
+		for i, row := range board {
+			for j, _ := range row {
+				if row[j].Val == number {
+					row[j].Marked = true
+					if checkWinner(board, i, j) {
+						winners = append(winners, x)
+						newWinner = true
+					}
+				}
+			}
+		}
+	}
+
+	return newWinner, winners
+}
+
+func part2(boards [][][]Number, numbers []int) int {
+	lastNumber := 0
+	var winners []int
+	newWinner := false
+	for _, number := range numbers {
+		newWinner, winners = mark2(boards, number, winners)
+		if newWinner {
+			lastNumber = number
+		}
+	}
+
+	return lastNumber * calculateBoard(&boards[winners[len(winners)-1]])
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("You need to specify a file!")
@@ -175,4 +223,12 @@ func main() {
 
 	boards, numbers := readInput(file)
 	fmt.Println("Part 1: ", part1(boards, numbers))
+
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		log.Fatal("Seek: ", err)
+	}
+
+	boards, numbers = readInput(file)
+	fmt.Println("Part 2: ", part2(boards, numbers))
 }
