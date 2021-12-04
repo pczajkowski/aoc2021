@@ -26,7 +26,6 @@ func readNumbers(line string) []int {
 func readRow(line string) []int {
 	var numbers []int
 	numbersStrings := strings.Split(line, " ")
-	fmt.Println(numbersStrings)
 	for _, numberString := range numbersStrings {
 		if numberString == "" {
 			continue
@@ -71,7 +70,6 @@ func readInput(file *os.File) ([][][]Number, []int) {
 		}
 
 		boards[boardIndex][rowIndex] = make([]Number, 5)
-		fmt.Println(line)
 		numbersInRow := readRow(line)
 		for i, number := range numbersInRow {
 			boards[boardIndex][rowIndex][i] = Number{number, false}
@@ -90,6 +88,79 @@ func readInput(file *os.File) ([][][]Number, []int) {
 	return boards, numbers
 }
 
+func allTrue(slice []bool) bool {
+	for _, value := range slice {
+		if !value {
+			return false
+		}
+	}
+
+	return true
+}
+
+func checkWinner(board [][]Number, row int, col int) bool {
+	rowCheck := make([]bool, 5)
+	for i := 0; i < 5; i++ {
+		rowCheck[i] = board[row][i].Marked
+	}
+
+	if allTrue(rowCheck) {
+		return true
+	}
+
+	colCheck := make([]bool, 5)
+	for i := 0; i < 5; i++ {
+		colCheck[i] = board[i][col].Marked
+	}
+
+	return allTrue(colCheck)
+}
+
+func mark(boards [][][]Number, number int) *[][]Number {
+	for _, board := range boards {
+		for i, row := range board {
+			for j, _ := range row {
+				if row[j].Val == number {
+					row[j].Marked = true
+					if checkWinner(board, i, j) {
+						return &board
+					}
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func calculateBoard(board *[][]Number) int {
+	sum := 0
+	for _, row := range *board {
+		for _, number := range row {
+			if !number.Marked {
+				sum += number.Val
+			}
+		}
+	}
+
+	return sum
+}
+
+func part1(boards [][][]Number, numbers []int) int {
+	lastNumber := 0
+	sumOfUnmarkedNumbers := 0
+	for _, number := range numbers {
+		lastNumber = number
+		winner := mark(boards, number)
+		if winner != nil {
+			sumOfUnmarkedNumbers = calculateBoard(winner)
+			break
+		}
+	}
+
+	return lastNumber * sumOfUnmarkedNumbers
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("You need to specify a file!")
@@ -103,5 +174,5 @@ func main() {
 	}
 
 	boards, numbers := readInput(file)
-	fmt.Println(boards, numbers)
+	fmt.Println("Part 1: ", part1(boards, numbers))
 }
