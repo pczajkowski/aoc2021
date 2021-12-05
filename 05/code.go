@@ -129,6 +129,66 @@ func part1(diagram [][]int) int {
 	return count
 }
 
+func fillDiagramDiagonal(points [][][]int, diagram [][]int) {
+	for _, point := range points {
+		if point[0][0] == point[1][0] {
+			start := point[0][1]
+			end := point[1][1]
+			if start > end {
+				start, end = end, start
+			}
+
+			for i := start; i <= end; i++ {
+				diagram[i][point[0][0]]++
+			}
+		} else if point[0][1] == point[1][1] {
+			start := point[0][0]
+			end := point[1][0]
+			if start > end {
+				start, end = end, start
+			}
+
+			for i := start; i <= end; i++ {
+				diagram[point[0][1]][i]++
+			}
+		} else {
+			start := point[0]
+			end := point[1]
+			if start[0] > end[0] {
+				start, end = end, start
+			}
+
+			goUp := true
+			if start[1] < end[1] {
+				goUp = false
+			}
+
+			x := start[0]
+			y := start[1]
+			for {
+				if x > end[0] {
+					break
+				}
+
+				if goUp && y < end[1] {
+					break
+				} else if !goUp && y > end[1] {
+					break
+				}
+
+				diagram[y][x]++
+				x++
+
+				if goUp {
+					y--
+				} else {
+					y++
+				}
+			}
+		}
+	}
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
@@ -138,4 +198,8 @@ func main() {
 	diagram := makeDiagram(input)
 	fillDiagram(input, diagram)
 	fmt.Println("Part1: ", part1(diagram))
+
+	diagram = makeDiagram(input)
+	fillDiagramDiagonal(input, diagram)
+	fmt.Println("Part2: ", part1(diagram))
 }
