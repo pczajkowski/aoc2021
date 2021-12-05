@@ -62,11 +62,36 @@ func readInput(file string) [][][]int {
 	return points
 }
 
+func largest(points [][][]int, index int) int {
+	largest := 0
+	for _, point := range points {
+		if point[0][index] > largest {
+			largest = point[0][index]
+		} else if point[1][index] > largest {
+			largest = point[1][index]
+		}
+	}
+
+	return largest
+}
+
+func makeDiagram(points [][][]int) [][]int {
+	largestX := largest(points, 0)
+	largestY := largest(points, 1)
+
+	diagram := make([][]int, largestY-1)
+	for i, _ := range diagram {
+		diagram[i] = make([]int, largestX-1)
+	}
+	return diagram
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println(input)
+	diagram := makeDiagram(input)
+	fmt.Println(diagram)
 }
