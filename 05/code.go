@@ -79,11 +79,54 @@ func makeDiagram(points [][][]int) [][]int {
 	largestX := largest(points, 0)
 	largestY := largest(points, 1)
 
-	diagram := make([][]int, largestY-1)
+	diagram := make([][]int, largestY+1)
 	for i, _ := range diagram {
-		diagram[i] = make([]int, largestX-1)
+		diagram[i] = make([]int, largestX+1)
 	}
 	return diagram
+}
+
+func fillDiagram(points [][][]int, diagram [][]int) {
+	for _, point := range points {
+		if point[0][0] != point[1][0] && point[0][1] != point[1][1] {
+			continue
+		}
+
+		if point[0][0] == point[1][0] {
+			start := point[0][1]
+			end := point[1][1]
+			if start > end {
+				start, end = end, start
+			}
+
+			for i := start; i <= end; i++ {
+				diagram[i][point[0][0]]++
+			}
+		} else {
+			start := point[0][0]
+			end := point[1][0]
+			if start > end {
+				start, end = end, start
+			}
+
+			for i := start; i <= end; i++ {
+				diagram[point[0][1]][i]++
+			}
+		}
+	}
+}
+
+func part1(diagram [][]int) int {
+	var count int
+	for _, row := range diagram {
+		for _, value := range row {
+			if value >= 2 {
+				count++
+			}
+		}
+	}
+
+	return count
 }
 
 func main() {
@@ -93,5 +136,6 @@ func main() {
 
 	input := readInput(os.Args[1])
 	diagram := makeDiagram(input)
-	fmt.Println(diagram)
+	fillDiagram(input, diagram)
+	fmt.Println("Part1: ", part1(diagram))
 }
