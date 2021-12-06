@@ -32,8 +32,8 @@ func readInput(file string) []int {
 	return input
 }
 
-func part1(fish []int) int {
-	for d := 0; d < 80; d++ {
+func part1(fish []int, days int) int {
+	for d := 0; d < days; d++ {
 		max := len(fish)
 		for i := 0; i < max; i++ {
 			fish[i]--
@@ -53,5 +53,5 @@ func main() {
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println("Part 1:", part1(input))
+	fmt.Println("Part 1:", part1(input, 80))
 }
