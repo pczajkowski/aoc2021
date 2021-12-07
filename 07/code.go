@@ -38,11 +38,36 @@ func readInput(file string) (map[int]int, []int) {
 	return crabs, orderedCrabs
 }
 
+func part1(crabs map[int]int, orderedCrabs []int) int {
+	shortest := 10000000
+
+	for _, crab := range orderedCrabs {
+		route := 0
+		for key, value := range crabs {
+			if key == crab {
+				continue
+			}
+
+			if key < crab {
+				route += (crab - key) * value
+			} else {
+				route += (key - crab) * value
+			}
+		}
+
+		if route < shortest {
+			shortest = route
+		}
+	}
+
+	return shortest
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	crabs, orderedCrabs := readInput(os.Args[1])
-	fmt.Println(crabs, orderedCrabs)
+	fmt.Println("Part1: ", part1(crabs, orderedCrabs))
 }
