@@ -38,32 +38,21 @@ func readInput(file string) (map[int]int, []int) {
 	return crabs, orderedCrabs
 }
 
-func part1(crabs map[int]int, orderedCrabs []int) int {
-	shortest := 10000000
-
-	for _, crab := range orderedCrabs {
-		route := 0
-		for key, value := range crabs {
-			if key == crab {
-				continue
-			}
-
-			if key < crab {
-				route += (crab - key) * value
-			} else {
-				route += (key - crab) * value
-			}
-		}
-
-		if route < shortest {
-			shortest = route
-		}
-	}
-
-	return shortest
+func costPart1(steps int, value int) int {
+	return steps * value
 }
 
-func part2(crabs map[int]int, orderedCrabs []int) int {
+func costPart2(steps int, value int) int {
+	cost := 0
+
+	for i := 0; i < steps; i++ {
+		cost += (i + 1) * value
+	}
+
+	return cost
+}
+
+func calculate(crabs map[int]int, orderedCrabs []int, cost func(int, int) int) int {
 	shortest := 1000000000
 
 	max := orderedCrabs[len(orderedCrabs)-1]
@@ -81,9 +70,7 @@ func part2(crabs map[int]int, orderedCrabs []int) int {
 				steps = key - crab
 			}
 
-			for i := 0; i < steps; i++ {
-				route += (i + 1) * value
-			}
+			route += cost(steps, value)
 		}
 
 		if route < shortest {
@@ -100,6 +87,6 @@ func main() {
 	}
 
 	crabs, orderedCrabs := readInput(os.Args[1])
-	fmt.Println("Part1: ", part1(crabs, orderedCrabs))
-	fmt.Println("Part2: ", part2(crabs, orderedCrabs))
+	fmt.Println("Part1: ", calculate(crabs, orderedCrabs, costPart1))
+	fmt.Println("Part2: ", calculate(crabs, orderedCrabs, costPart2))
 }
