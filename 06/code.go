@@ -32,7 +32,7 @@ func readInput(file string) map[int]int {
 	return input
 }
 
-func part1(fish map[int]int, days int) int {
+func breed(fish map[int]int, days int) int {
 	for d := 0; d < days; d++ {
 		newFish := make(map[int]int)
 		for k, v := range fish {
@@ -62,6 +62,6 @@ func main() {
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println("Part 1:", part1(input, 80))
-	fmt.Println("Part 2:", part1(input, 256))
+	fmt.Println("Part 1:", breed(input, 80))
+	fmt.Println("Part 2:", breed(input, 256))
 }
