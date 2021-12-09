@@ -57,17 +57,19 @@ func hasSmallerNeighbors(input [][]int, x, y int) bool {
 	return false
 }
 
-func part1(input [][]int) int {
+func part1(input [][]int) (int, [][]int) {
 	var sum int
+	var lowPoints [][]int
 	for x, row := range input {
 		for y, value := range row {
 			if !hasSmallerNeighbors(input, x, y) {
 				sum += value + 1
+				lowPoints = append(lowPoints, []int{x, y})
 			}
 		}
 	}
 
-	return sum
+	return sum, lowPoints
 }
 
 func main() {
@@ -76,5 +78,7 @@ func main() {
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println("Part 1:", part1(input))
+	sum, lowPoints := part1(input)
+	fmt.Println("Part 1:", sum)
+	fmt.Println(lowPoints)
 }
