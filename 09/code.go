@@ -38,19 +38,19 @@ func readInput(file string) [][]int {
 }
 
 func hasSmallerNeighbors(input [][]int, x, y int) bool {
-	if x-1 >= 0 && input[x-1][y] < input[x][y] {
+	if x-1 >= 0 && input[x-1][y] <= input[x][y] {
 		return true
 	}
 
-	if x+1 < len(input) && input[x+1][y] < input[x][y] {
+	if x+1 < len(input) && input[x+1][y] <= input[x][y] {
 		return true
 	}
 
-	if y-1 >= 0 && input[x][y-1] < input[x][y] {
+	if y-1 >= 0 && input[x][y-1] <= input[x][y] {
 		return true
 	}
 
-	if y+1 < len(input[0]) && input[x][y+1] < input[x][y] {
+	if y+1 < len(input[0]) && input[x][y+1] <= input[x][y] {
 		return true
 	}
 
