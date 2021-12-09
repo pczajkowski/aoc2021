@@ -72,6 +72,75 @@ func part1(input [][]int) (int, [][]int) {
 	return sum, lowPoints
 }
 
+type point struct {
+	x, y int
+}
+
+func getNeighbors(input [][]int, x, y int) []point {
+	var neighbors []point
+	if x-1 >= 0 && input[x-1][y] != 9 {
+		neighbors = append(neighbors, point{x - 1, y})
+	}
+
+	if x+1 < len(input) && input[x+1][y] != 9 {
+		neighbors = append(neighbors, point{x + 1, y})
+	}
+
+	if y-1 >= 0 && input[x][y-1] != 9 {
+		neighbors = append(neighbors, point{x, y - 1})
+	}
+
+	if y+1 < len(input[0]) && input[x][y+1] != 9 {
+		neighbors = append(neighbors, point{x, y + 1})
+	}
+
+	return neighbors
+}
+
+func getBasin(input [][]int, x int, y int) []point {
+	var basin []point
+	neighbors := getNeighbors(input, x, y)
+
+	checked := make(map[point]bool)
+	for {
+		if len(neighbors) == 0 {
+			break
+		}
+
+		var next []point
+		for _, neighbor := range neighbors {
+			if checked[neighbor] {
+				continue
+			}
+
+			checked[neighbor] = true
+			basin = append(basin, neighbor)
+			next = append(next, getNeighbors(input, neighbor.x, neighbor.y)...)
+		}
+
+		neighbors = next
+	}
+
+	return basin
+}
+
+func getBasins(input [][]int, lowPoints [][]int) [][]point {
+	var basins [][]point
+
+	for _, lowPoint := range lowPoints {
+		basin := getBasin(input, lowPoint[0], lowPoint[1])
+		basins = append(basins, basin)
+	}
+
+	return basins
+}
+
+func part2(input [][]int, lowPoints [][]int) int {
+	basins := getBasins(input, lowPoints)
+	fmt.Println(basins)
+	return 0
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
@@ -80,5 +149,5 @@ func main() {
 	input := readInput(os.Args[1])
 	sum, lowPoints := part1(input)
 	fmt.Println("Part 1:", sum)
-	fmt.Println(lowPoints)
+	part2(input, lowPoints)
 }
