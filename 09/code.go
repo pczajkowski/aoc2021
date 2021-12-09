@@ -58,23 +58,23 @@ func hasSmallerNeighbors(input [][]int, x, y int) bool {
 	return false
 }
 
-func part1(input [][]int) (int, [][]int) {
+type point struct {
+	x, y int
+}
+
+func part1(input [][]int) (int, []point) {
 	var sum int
-	var lowPoints [][]int
+	var lowPoints []point
 	for x, row := range input {
 		for y, value := range row {
 			if !hasSmallerNeighbors(input, x, y) {
 				sum += value + 1
-				lowPoints = append(lowPoints, []int{x, y})
+				lowPoints = append(lowPoints, point{x, y})
 			}
 		}
 	}
 
 	return sum, lowPoints
-}
-
-type point struct {
-	x, y int
 }
 
 func getNeighbors(input [][]int, x, y int) []point {
@@ -125,18 +125,18 @@ func getBasin(input [][]int, x int, y int) []point {
 	return basin
 }
 
-func getBasins(input [][]int, lowPoints [][]int) [][]point {
+func getBasins(input [][]int, lowPoints []point) [][]point {
 	var basins [][]point
 
 	for _, lowPoint := range lowPoints {
-		basin := getBasin(input, lowPoint[0], lowPoint[1])
+		basin := getBasin(input, lowPoint.x, lowPoint.y)
 		basins = append(basins, basin)
 	}
 
 	return basins
 }
 
-func part2(input [][]int, lowPoints [][]int) int {
+func part2(input [][]int, lowPoints []point) int {
 	basins := getBasins(input, lowPoints)
 
 	sort.Slice(basins, func(i, j int) bool {
