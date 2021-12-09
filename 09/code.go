@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -137,8 +138,17 @@ func getBasins(input [][]int, lowPoints [][]int) [][]point {
 
 func part2(input [][]int, lowPoints [][]int) int {
 	basins := getBasins(input, lowPoints)
-	fmt.Println(basins)
-	return 0
+
+	sort.Slice(basins, func(i, j int) bool {
+		return len(basins[i]) > len(basins[j])
+	})
+
+	result := 1
+	for i := 0; i < 3; i++ {
+		result *= len(basins[i])
+	}
+
+	return result
 }
 
 func main() {
@@ -149,5 +159,5 @@ func main() {
 	input := readInput(os.Args[1])
 	sum, lowPoints := part1(input)
 	fmt.Println("Part 1:", sum)
-	part2(input, lowPoints)
+	fmt.Println("Part 2:", part2(input, lowPoints))
 }
