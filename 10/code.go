@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -29,12 +30,10 @@ func init() {
 }
 
 func parseLine(line string) rune {
-	opened := make(map[rune]int)
 	var lastOpened []rune
 
 	for _, char := range line {
 		if char == '(' || char == '[' || char == '{' || char == '<' {
-			opened[char]++
 			lastOpened = append(lastOpened, char)
 			continue
 		}
@@ -84,44 +83,73 @@ func part1(input []string) (int, []string) {
 	return total, incomplete
 }
 
-func fixLine(line string) rune {
-	opened := make(map[rune]int)
+func fixLine(line string) []rune {
 	var lastOpened []rune
 
 	for _, char := range line {
 		if char == '(' || char == '[' || char == '{' || char == '<' {
-			opened[char]++
 			lastOpened = append(lastOpened, char)
 			continue
 		}
 
 		if len(lastOpened) == 0 {
-			return char
+			return lastOpened
 		}
 
 		switch char {
 		case ')':
-			if lastOpened[len(lastOpened)-1] != '(' {
-				return char
+			if lastOpened[len(lastOpened)-1] == '(' {
+				lastOpened = lastOpened[:len(lastOpened)-1]
 			}
 		case ']':
-			if lastOpened[len(lastOpened)-1] != '[' {
-				return char
+			if lastOpened[len(lastOpened)-1] == '[' {
+				lastOpened = lastOpened[:len(lastOpened)-1]
 			}
 		case '}':
-			if lastOpened[len(lastOpened)-1] != '{' {
-				return char
+			if lastOpened[len(lastOpened)-1] == '{' {
+				lastOpened = lastOpened[:len(lastOpened)-1]
 			}
 		case '>':
-			if lastOpened[len(lastOpened)-1] != '<' {
-				return char
+			if lastOpened[len(lastOpened)-1] == '<' {
+				lastOpened = lastOpened[:len(lastOpened)-1]
 			}
 		}
-
-		lastOpened = lastOpened[:len(lastOpened)-1]
 	}
 
-	return ' '
+	return lastOpened
+}
+
+func calculateScore(line []rune) int {
+	var score int
+
+	max := len(line)
+	for i := max - 1; i >= 0; i-- {
+		score *= 5
+
+		switch line[i] {
+		case '(':
+			score += 1
+		case '[':
+			score += 2
+		case '{':
+			score += 3
+		case '<':
+			score += 4
+		}
+	}
+
+	return score
+}
+
+func part2(input []string) int {
+	var scores []int
+	for _, line := range input {
+		toFix := fixLine(line)
+		scores = append(scores, calculateScore(toFix))
+	}
+
+	sort.Ints(scores)
+	return scores[len(scores)/2]
 }
 
 func main() {
@@ -132,5 +160,5 @@ func main() {
 	input := readInput(os.Args[1])
 	total, incomplete := part1(input)
 	fmt.Println("Part 1:", total)
-	fmt.Println(len(incomplete))
+	fmt.Println("Part 2:", part2(incomplete))
 }
