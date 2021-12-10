@@ -68,16 +68,60 @@ func parseLine(line string) rune {
 	return ' '
 }
 
-func part1(input []string) int {
+func part1(input []string) (int, []string) {
 	var total int
+	var incomplete []string
 	for _, line := range input {
 		illegal := parseLine(line)
 		if illegal != ' ' {
 			total += points[illegal]
+			continue
 		}
+
+		incomplete = append(incomplete, line)
 	}
 
-	return total
+	return total, incomplete
+}
+
+func fixLine(line string) rune {
+	opened := make(map[rune]int)
+	var lastOpened []rune
+
+	for _, char := range line {
+		if char == '(' || char == '[' || char == '{' || char == '<' {
+			opened[char]++
+			lastOpened = append(lastOpened, char)
+			continue
+		}
+
+		if len(lastOpened) == 0 {
+			return char
+		}
+
+		switch char {
+		case ')':
+			if lastOpened[len(lastOpened)-1] != '(' {
+				return char
+			}
+		case ']':
+			if lastOpened[len(lastOpened)-1] != '[' {
+				return char
+			}
+		case '}':
+			if lastOpened[len(lastOpened)-1] != '{' {
+				return char
+			}
+		case '>':
+			if lastOpened[len(lastOpened)-1] != '<' {
+				return char
+			}
+		}
+
+		lastOpened = lastOpened[:len(lastOpened)-1]
+	}
+
+	return ' '
 }
 
 func main() {
@@ -86,5 +130,7 @@ func main() {
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println("Part 1:", part1(input))
+	total, incomplete := part1(input)
+	fmt.Println("Part 1:", total)
+	fmt.Println(len(incomplete))
 }
