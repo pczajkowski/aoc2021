@@ -110,11 +110,56 @@ func part1(input [][]octo) int {
 	return flashed
 }
 
+func allFlashed(input [][]octo) bool {
+	for _, row := range input {
+		for _, octo := range row {
+			if !octo.flashed {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func part2(input [][]octo) int {
+	var flashed int
+	count := 1
+	for {
+		for y, row := range input {
+			for x, _ := range row {
+				if input[y][x].flashed {
+					continue
+				}
+
+				input[y][x].value++
+				if input[y][x].value > 9 {
+					input[y][x].value = 0
+					input[y][x].flashed = true
+					flashed++
+					flashed += doNeighbors(input, x, y)
+				}
+			}
+		}
+
+		if allFlashed(input) {
+			break
+		}
+
+		count++
+		reset(input)
+	}
+
+	return count
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println(part1(input))
+	fmt.Println("Part1:", part1(input))
+	input = readInput(os.Args[1])
+	fmt.Println("Part2:", part2(input))
 }
