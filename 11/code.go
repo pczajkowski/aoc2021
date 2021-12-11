@@ -124,7 +124,7 @@ func allFlashed(input [][]octo) bool {
 
 func part2(input [][]octo) int {
 	var flashed int
-	count := 1
+	count := 101
 	for {
 		for y, row := range input {
 			for x, _ := range row {
@@ -160,6 +160,5 @@ func main() {
 
 	input := readInput(os.Args[1])
 	fmt.Println("Part1:", part1(input))
-	input = readInput(os.Args[1])
 	fmt.Println("Part2:", part2(input))
 }
