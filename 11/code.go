@@ -74,13 +74,24 @@ func doNeighbors(input [][]octo, x, y int) int {
 	return neighbors
 }
 
+func reset(input [][]octo) {
+	for y, row := range input {
+		for x, _ := range row {
+			if input[y][x].flashed {
+				input[y][x].value = 0
+				input[y][x].flashed = false
+			}
+		}
+	}
+}
+
 func part1(input [][]octo) int {
 	var flashed int
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		for y, row := range input {
 			for x, _ := range row {
 				if input[y][x].flashed {
-					input[y][x].flashed = false
+					continue
 				}
 
 				input[y][x].value++
@@ -92,6 +103,8 @@ func part1(input [][]octo) int {
 				}
 			}
 		}
+
+		reset(input)
 	}
 
 	return flashed
