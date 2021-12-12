@@ -67,10 +67,19 @@ func part1(input map[string][]string) int {
 	return len(paths)
 }
 
+func anyVisitedTwice(visited map[string]int) bool {
+	for _, v := range visited {
+		if v > 1 {
+			return true
+		}
+	}
+
+	return false
+}
+
 func findAllPathsPart2(start string, end string, visited map[string]int, input map[string][]string, localPath []string) {
 	if start == end {
 		paths = append(paths, localPath)
-		fmt.Println(localPath)
 		return
 	}
 
@@ -79,16 +88,20 @@ func findAllPathsPart2(start string, end string, visited map[string]int, input m
 	}
 
 	for _, next := range input[start] {
-		if next != "start" && visited[next] < 2 {
+		if next != "start" {
+			if visited[next]+1 > 1 {
+				if anyVisitedTwice(visited) {
+					continue
+				}
+			}
+
 			localPath = append(localPath, next)
 			findAllPathsPart2(next, end, visited, input, localPath)
 			localPath = localPath[:len(localPath)-1]
 		}
 	}
 
-	if visited[start] > 0 {
-		visited[start]--
-	}
+	visited[start]--
 }
 
 func part2(input map[string][]string) int {
