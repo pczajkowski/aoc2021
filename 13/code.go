@@ -13,7 +13,12 @@ type point struct {
 	x, y int
 }
 
-func readInput(file string) ([]point, int, int) {
+type fold struct {
+	val int
+	cat string
+}
+
+func readInput(file string) ([]point, []fold) {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +26,7 @@ func readInput(file string) ([]point, int, int) {
 
 	lines := strings.Split(string(content), "\n")
 	var input []point
-	var foldX, foldY int
+	var folds []fold
 	readingPoints := true
 	for _, line := range lines {
 		if line == "" {
@@ -51,23 +56,21 @@ func readInput(file string) ([]point, int, int) {
 				log.Fatal("Invalid input")
 			}
 
+			val, err := strconv.Atoi(parts[1])
+			if err != nil {
+				log.Fatal(err)
+			}
 			if parts[0] == "fold along x" {
-				foldX, err = strconv.Atoi(parts[1])
-				if err != nil {
-					log.Fatal(err)
-				}
+				folds = append(folds, fold{val, "x"})
 			} else if parts[0] == "fold along y" {
-				foldY, err = strconv.Atoi(parts[1])
-				if err != nil {
-					log.Fatal(err)
-				}
+				folds = append(folds, fold{val, "y"})
 			} else {
 				log.Fatal("Invalid input")
 			}
 		}
 	}
 
-	return input, foldX, foldY
+	return input, folds
 }
 
 func foldByY(input []point, foldY int) {
@@ -82,6 +85,17 @@ func foldByY(input []point, foldY int) {
 		}
 
 		input[i].y = newY
+	}
+}
+
+func foldByX(input []point, foldX int) {
+	for i, p := range input {
+		if p.x > foldX {
+			input[i].x = p.x%foldX - 1
+			continue
+		}
+
+		input[i].x = foldX - p.x - 1
 	}
 }
 
@@ -100,8 +114,15 @@ func countPoints(input []point) int {
 	return count
 }
 
-func part1(input []point, foldY int) int {
-	foldByY(input, foldY)
+func part1(input []point, folds []fold) int {
+	firstFold := folds[0]
+
+	if firstFold.cat == "x" {
+		foldByX(input, firstFold.val)
+	} else {
+		foldByY(input, firstFold.val)
+	}
+
 	return countPoints(input)
 }
 
@@ -110,6 +131,6 @@ func main() {
 		log.Fatal("Please provide a file name as argument")
 	}
 
-	input, _, foldY := readInput(os.Args[1])
-	fmt.Println("Part1:", part1(input, foldY))
+	input, folds := readInput(os.Args[1])
+	fmt.Println("Part1:", part1(input, folds))
 }
