@@ -162,12 +162,13 @@ func createBoard(input []point) [][]string {
 
 func printBoard(input []point) {
 	board := createBoard(input)
+	start := len(board[0]) - 1
 	for _, line := range board {
-		for _, c := range line {
-			if c == "" {
+		for i := start; i >= 0; i-- {
+			if line[i] == "" {
 				fmt.Print(" ")
 			} else {
-				fmt.Print(c)
+				fmt.Print(line[i])
 			}
 		}
 		fmt.Println()
