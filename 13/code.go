@@ -91,7 +91,7 @@ func foldByY(input []point, foldY int) {
 func foldByX(input []point, foldX int) {
 	for i, p := range input {
 		if p.x > foldX {
-			input[i].x = p.x%foldX - 1
+			input[i].x = p.x - foldX - 1
 			continue
 		}
 
