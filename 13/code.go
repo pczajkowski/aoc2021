@@ -70,11 +70,46 @@ func readInput(file string) ([]point, int, int) {
 	return input, foldX, foldY
 }
 
+func foldByY(input []point, foldY int) {
+	for i, p := range input {
+		if p.y < foldY {
+			continue
+		}
+
+		newY := p.y % foldY
+		if newY > 0 {
+			newY = foldY - newY
+		}
+
+		input[i].y = newY
+	}
+}
+
+func countPoints(input []point) int {
+	counted := make(map[point]bool)
+	count := 0
+	for _, p := range input {
+		if counted[p] {
+			continue
+		}
+
+		counted[p] = true
+		count++
+	}
+
+	return count
+}
+
+func part1(input []point, foldY int) int {
+	foldByY(input, foldY)
+	return countPoints(input)
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
-	input, foldX, foldY := readInput(os.Args[1])
-	fmt.Println(input, foldX, foldY)
+	input, _, foldY := readInput(os.Args[1])
+	fmt.Println("Part1:", part1(input, foldY))
 }
