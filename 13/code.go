@@ -126,6 +126,66 @@ func part1(input []point, folds []fold) int {
 	return countPoints(input)
 }
 
+func largest(input []point) (int, int) {
+	largestX := input[0].x
+	largestY := input[0].y
+	for _, i := range input {
+		if i.x > largestX {
+			largestX = i.x
+		}
+		if i.y > largestY {
+			largestY = i.y
+		}
+	}
+
+	return largestX, largestY
+}
+
+func createBoard(input []point) [][]string {
+	largestX, largestY := largest(input)
+	board := make([][]string, largestY+1)
+
+	for i, _ := range board {
+		board[i] = make([]string, largestX+1)
+	}
+
+	for _, p := range input {
+		if p.x < 0 || p.y < 0 {
+			continue
+		}
+
+		board[p.y][p.x] = "#"
+	}
+
+	return board
+}
+
+func printBoard(input []point) {
+	board := createBoard(input)
+	for _, line := range board {
+		for _, c := range line {
+			if c == "" {
+				fmt.Print(" ")
+			} else {
+				fmt.Print(c)
+			}
+		}
+		fmt.Println()
+	}
+}
+
+func part2(input []point, folds []fold) {
+	for _, fold := range folds[1:] {
+		if fold.cat == "x" {
+			foldByX(input, fold.val)
+		} else {
+			foldByY(input, fold.val)
+		}
+	}
+
+	printBoard(input)
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
@@ -133,4 +193,6 @@ func main() {
 
 	input, folds := readInput(os.Args[1])
 	fmt.Println("Part1:", part1(input, folds))
+	fmt.Println("Part2:")
+	part2(input, folds)
 }
