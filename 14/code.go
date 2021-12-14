@@ -63,18 +63,8 @@ func countElements(count map[byte]int) (int, int) {
 	return smallest, largest
 }
 
-func printCounts(counts map[byte]int) {
-	for k, v := range counts {
-		fmt.Printf("%c: %d;", k, v)
-	}
-	fmt.Println()
-}
-
-func part1(template map[string]int, count map[byte]int, input map[string][]string) (map[string]int, int) {
-	fmt.Println(template)
-	printCounts(count)
-
-	for i := 0; i < 10; i++ {
+func process(template map[string]int, count map[byte]int, input map[string][]string, rounds int) (map[string]int, map[byte]int, int) {
+	for i := 0; i < rounds; i++ {
 		newTemplate := make(map[string]int)
 		for k, v1 := range template {
 			for _, v2 := range input[k] {
@@ -85,12 +75,10 @@ func part1(template map[string]int, count map[byte]int, input map[string][]strin
 		}
 
 		template = newTemplate
-		printCounts(count)
 	}
 
 	smallest, largest := countElements(count)
-	fmt.Println(smallest, largest)
-	return template, largest - smallest
+	return template, count, largest - smallest
 }
 
 func main() {
@@ -100,7 +88,9 @@ func main() {
 
 	template, count, input := readInput(os.Args[1])
 	var diff int
-	_, diff = part1(template, count, input)
+	template, count, diff = process(template, count, input, 10)
 	fmt.Println("Part1:", diff)
-	//fmt.Println("Part1:", part2(template, input))
+
+	_, _, diff = process(template, count, input, 30)
+	fmt.Println("Part2:", diff)
 }
