@@ -40,11 +40,58 @@ func readInput(file string) (string, map[string]string) {
 	return template, input
 }
 
+func process(template string, input map[string]string) string {
+	var result []string
+	for i := 0; i < len(template)-1; i++ {
+		insert := input[template[i:i+2]]
+		result = append(result, string(template[i]))
+		result = append(result, insert)
+
+		if i == len(template)-2 {
+			result = append(result, string(template[i+1]))
+		}
+	}
+
+	return strings.Join(result, "")
+}
+
+func countElements(template string) (int, int) {
+	counts := make(map[rune]int)
+	for _, c := range template {
+		counts[c]++
+	}
+
+	smallest := counts['N']
+	largest := counts['N']
+	for _, c := range counts {
+		if c < smallest {
+			smallest = c
+		}
+
+		if c > largest {
+			largest = c
+		}
+	}
+
+	return smallest, largest
+}
+
+func part1(template string, input map[string]string) int {
+	result := template
+	for i := 0; i < 10; i++ {
+		result = process(result, input)
+	}
+
+	smallest, largest := countElements(result)
+
+	return largest - smallest
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	template, input := readInput(os.Args[1])
-	fmt.Println(template, input)
+	fmt.Println("Part1:", part1(template, input))
 }
