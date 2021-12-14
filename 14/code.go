@@ -76,9 +76,20 @@ func countElements(template string) (int, int) {
 	return smallest, largest
 }
 
-func part1(template string, input map[string]string) int {
+func part1(template string, input map[string]string) (string, int) {
 	result := template
 	for i := 0; i < 10; i++ {
+		result = process(result, input)
+	}
+
+	smallest, largest := countElements(result)
+
+	return result, largest - smallest
+}
+
+func part2(template string, input map[string]string) int {
+	result := template
+	for i := 0; i < 30; i++ {
 		result = process(result, input)
 	}
 
@@ -93,5 +104,8 @@ func main() {
 	}
 
 	template, input := readInput(os.Args[1])
-	fmt.Println("Part1:", part1(template, input))
+	var diff int
+	template, diff = part1(template, input)
+	fmt.Println("Part1:", diff)
+	fmt.Println("Part1:", part2(template, input))
 }
