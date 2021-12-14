@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-func readInput(file string) (string, map[string]string) {
+func readInput(file string) (map[string]int, map[string][]string) {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	lines := strings.Split(string(content), "\n")
-	var template string
-	input := make(map[string]string)
+	template := make(map[string]int)
+	input := make(map[string][]string)
 	readingTemplate := true
 	for _, line := range lines {
 		if line == "" {
@@ -25,7 +25,9 @@ func readInput(file string) (string, map[string]string) {
 		}
 
 		if readingTemplate {
-			template = line
+			for i := 0; i < len(line)-1; i++ {
+				template[string(line[i:i+2])] += 1
+			}
 			continue
 		}
 
@@ -34,31 +36,17 @@ func readInput(file string) (string, map[string]string) {
 			log.Fatal("Invalid line: ", line)
 		}
 
-		input[parts[0]] = parts[1]
+		input[parts[0]] = []string{fmt.Sprintf("%s%s", parts[0][0], parts[1]), fmt.Sprintf("%s%s", parts[0][1], parts[1])}
 	}
 
 	return template, input
 }
 
-func process(template string, input map[string]string) string {
-	var result []string
-	for i := 0; i < len(template)-1; i++ {
-		insert := input[template[i:i+2]]
-		result = append(result, string(template[i]))
-		result = append(result, insert)
-
-		if i == len(template)-2 {
-			result = append(result, string(template[i+1]))
-		}
-	}
-
-	return strings.Join(result, "")
-}
-
-func countElements(template string) (int, int) {
-	counts := make(map[rune]int)
-	for _, c := range template {
-		counts[c]++
+func countElements(template map[string]int) (int, int) {
+	counts := make(map[byte]int)
+	for k, v := range template {
+		counts[k[0]] += v
+		counts[k[1]] += v
 	}
 
 	smallest := counts['N']
@@ -76,26 +64,18 @@ func countElements(template string) (int, int) {
 	return smallest, largest
 }
 
-func part1(template string, input map[string]string) (string, int) {
-	result := template
+func part1(template map[string]int, input map[string][]string) (map[string]int, int) {
 	for i := 0; i < 10; i++ {
-		result = process(result, input)
+		for k, v1 := range template {
+			for _, v2 := range input[k] {
+				template[v2] += v1
+			}
+		}
 	}
 
-	smallest, largest := countElements(result)
-
-	return result, largest - smallest
-}
-
-func part2(template string, input map[string]string) int {
-	result := template
-	for i := 0; i < 30; i++ {
-		result = process(result, input)
-	}
-
-	smallest, largest := countElements(result)
-
-	return largest - smallest
+	smallest, largest := countElements(template)
+	fmt.Println(smallest, largest)
+	return template, largest - smallest
 }
 
 func main() {
@@ -105,7 +85,7 @@ func main() {
 
 	template, input := readInput(os.Args[1])
 	var diff int
-	template, diff = part1(template, input)
+	_, diff = part1(template, input)
 	fmt.Println("Part1:", diff)
-	fmt.Println("Part1:", part2(template, input))
+	//fmt.Println("Part1:", part2(template, input))
 }
