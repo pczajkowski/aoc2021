@@ -36,7 +36,7 @@ func readInput(file string) (map[string]int, map[string][]string) {
 			log.Fatal("Invalid line: ", line)
 		}
 
-		input[parts[0]] = []string{fmt.Sprintf("%s%s", parts[0][0], parts[1]), fmt.Sprintf("%s%s", parts[0][1], parts[1])}
+		input[parts[0]] = []string{fmt.Sprintf("%c%s", parts[0][0], parts[1]), fmt.Sprintf("%s%c", parts[1], parts[0][1])}
 	}
 
 	return template, input
@@ -66,11 +66,14 @@ func countElements(template map[string]int) (int, int) {
 
 func part1(template map[string]int, input map[string][]string) (map[string]int, int) {
 	for i := 0; i < 10; i++ {
+		newTemplate := make(map[string]int)
 		for k, v1 := range template {
 			for _, v2 := range input[k] {
-				template[v2] += v1
+				newTemplate[v2] += v1
 			}
 		}
+
+		template = newTemplate
 	}
 
 	smallest, largest := countElements(template)
