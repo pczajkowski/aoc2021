@@ -114,12 +114,41 @@ func simulateY(v int, yPoint point) int {
 	return 0
 }
 
-func main() {
-	if len(os.Args) < 2 {
-		log.Fatal("Please provide a file name as argument")
+func part2(minXVelocity int, input []point) int {
+	found := 0
+
+	for initialXVelocity := minXVelocity; initialXVelocity <= input[0].max; initialXVelocity++ {
+		for initialYVelocity := 0 - input[1].min - 1; initialYVelocity >= input[1].min; initialYVelocity-- {
+			x := 0
+			y := 0
+			xV := initialXVelocity
+			yV := initialYVelocity
+			for {
+				x += xV
+				y += yV
+				if xV > 0 {
+					xV--
+				}
+				yV--
+
+				if x > input[0].max || y < input[1].min {
+					break
+				}
+
+				if (x >= input[0].min && x <= input[0].max) && (y >= input[1].min && y <= input[1].max) {
+					found++
+					break
+				}
+			}
+		}
 	}
 
+	return found
+}
+
+func main() {
 	input := readInput(os.Args[1])
-	//fmt.Println(findMinXVelocity(input[0]))
+	minXVelocity := findMinXVelocity(input[0])
 	fmt.Println("Part1:", simulateY(0-input[1].min-1, input[1]))
+	fmt.Println("Part2:", part2(minXVelocity, input))
 }
