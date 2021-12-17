@@ -67,11 +67,34 @@ func readInput(file string) []point {
 	return points
 }
 
+func findMinXVelocity(xPoint point) int {
+	for i := 1; i < xPoint.min; i++ {
+		v := i
+		x := 0
+		for {
+			x += v
+			if v > 0 {
+				v--
+			}
+
+			if v == 0 {
+				break
+			}
+		}
+
+		if x >= xPoint.min {
+			return i
+		}
+	}
+
+	return 0
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println(input)
+	fmt.Println(findMinXVelocity(input[0]))
 }
