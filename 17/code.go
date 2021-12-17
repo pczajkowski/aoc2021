@@ -90,11 +90,36 @@ func findMinXVelocity(xPoint point) int {
 	return 0
 }
 
+func simulateY(v int, yPoint point) int {
+	y := 0
+	largestY := y
+	previousY := y
+	for {
+		previousY = y
+		if y <= yPoint.max {
+			break
+		}
+
+		y += v
+		if y > largestY {
+			largestY = y
+		}
+		v--
+	}
+
+	if previousY >= yPoint.min && previousY <= yPoint.max {
+		return largestY
+	}
+
+	return 0
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println(findMinXVelocity(input[0]))
+	//fmt.Println(findMinXVelocity(input[0]))
+	fmt.Println("Part1:", simulateY(0-input[1].min-1, input[1]))
 }
