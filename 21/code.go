@@ -43,11 +43,57 @@ func readInput(file string) (int, int) {
 	return player1, player2
 }
 
+var dice int
+
+func roll() int {
+	dice++
+	return dice
+}
+
+func part1(player1, player2 int) int {
+	var score1, score2 int
+	first := true
+	countDice := 0
+
+	for {
+		if score1 >= 1000 || score2 >= 1000 {
+			break
+		}
+
+		if first {
+			player1 = (roll() + roll() + roll() + player1) % 10
+			if player1 == 0 {
+				player1 = 10
+			}
+
+			score1 += player1
+			first = false
+			countDice += 3
+		} else {
+			player2 = (roll() + roll() + roll() + player2) % 10
+			if player2 == 0 {
+				player2 = 10
+			}
+
+			score2 += player2
+			first = true
+			countDice += 3
+		}
+	}
+
+	if score1 > score2 {
+		return score2 * countDice
+	}
+
+	return score1 * countDice
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	player1, player2 := readInput(os.Args[1])
-	fmt.Println(player1, player2)
+	dice = 0
+	fmt.Println("Part1:", part1(player1, player2))
 }
