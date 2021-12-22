@@ -80,11 +80,71 @@ func readInput(file string) []action {
 	return input
 }
 
+type cube struct {
+	x, y, z int
+}
+
+func countOn(cubes map[cube]bool) int {
+	count := 0
+	for _, on := range cubes {
+		if on {
+			count++
+		}
+	}
+
+	return count
+}
+
+func part1(input []action) int {
+	cubes := make(map[cube]bool)
+	for _, action := range input {
+		startX := action.x[0]
+		if startX < -50 {
+			startX = -50
+		}
+
+		endX := action.x[1]
+		if endX > 50 {
+			endX = 50
+		}
+
+		for x := startX; x <= endX; x++ {
+			startY := action.y[0]
+			if startY < -50 {
+				startY = -50
+			}
+
+			endY := action.y[1]
+			if endY > 50 {
+				endY = 50
+			}
+
+			for y := startY; y <= endY; y++ {
+				startZ := action.z[0]
+				if startZ < -50 {
+					startZ = -50
+				}
+
+				endZ := action.z[1]
+				if endZ > 50 {
+					endZ = 50
+				}
+
+				for z := startZ; z <= endZ; z++ {
+					cubes[cube{x, y, z}] = action.on
+				}
+			}
+		}
+	}
+
+	return countOn(cubes)
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println(input)
+	fmt.Println("Part1:", part1(input))
 }
