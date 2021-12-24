@@ -37,9 +37,13 @@ func readInput(file string) [][]operation {
 			log.Fatal("Invalid line: ", line)
 		}
 
-		if parts[0] == "inp" && len(operations) > 0 {
-			input = append(input, operations)
-			operations = []operation{}
+		if parts[0] == "inp" {
+			if len(operations) > 0 {
+				input = append(input, operations)
+				operations = []operation{}
+			}
+
+			continue
 		}
 
 		current := operation{op: parts[0], a: parts[1][0]}
@@ -66,11 +70,114 @@ func readInput(file string) [][]operation {
 	return input
 }
 
+func do(action operation, variables map[byte]int) bool {
+	switch action.op {
+	case "add":
+		if action.isBNumber {
+			variables[action.a] += action.b
+			return true
+		} else {
+			variables[action.a] += variables[action.bC]
+			return true
+		}
+	case "mul":
+		if action.isBNumber {
+			variables[action.a] *= action.b
+			return true
+		} else {
+			variables[action.a] *= variables[action.bC]
+			return true
+		}
+	case "div":
+		if action.isBNumber {
+			if action.b == 0 {
+				return false
+			}
+
+			variables[action.a] /= action.b
+		} else {
+			if variables[action.bC] == 0 {
+				return false
+			}
+
+			variables[action.a] /= variables[action.bC]
+		}
+		return true
+	case "mod":
+		if variables[action.a] < 0 {
+			return false
+		}
+
+		if action.isBNumber {
+			if action.b <= 0 {
+				return false
+			}
+
+			variables[action.a] %= action.b
+		} else {
+			if variables[action.bC] <= 0 {
+				return false
+			}
+
+			variables[action.a] %= variables[action.bC]
+		}
+		return true
+	case "eql":
+		if action.isBNumber {
+			if variables[action.a] == action.b {
+				variables[action.a] = 1
+			} else {
+				variables[action.a] = 0
+			}
+		} else {
+			if variables[action.a] == variables[action.bC] {
+				variables[action.a] = 1
+			} else {
+				variables[action.a] = 0
+			}
+		}
+		return true
+	}
+
+	return false
+}
+
+func doSequence(sequence []operation, variables map[byte]int) bool {
+	for _, action := range sequence {
+		if !do(action, variables) {
+			fmt.Println(action, variables)
+			return false
+		}
+	}
+
+	return true
+}
+
+func part1(input [][]operation) []int {
+	var number []int
+	for i := 0; i < 14; i++ {
+		for j := 9; j >= 1; j-- {
+			variables := map[byte]int{}
+			variables['w'] = j
+			if !doSequence(input[i], map[byte]int{}) {
+				fmt.Println("Failed for ", j)
+			}
+
+			if variables['z'] == 0 {
+				number = append(number, j)
+				break
+			}
+		}
+	}
+
+	return number
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide a file name as argument")
 	}
 
 	input := readInput(os.Args[1])
-	fmt.Println(input)
+	fmt.Println("Part1:", part1(input))
 }
