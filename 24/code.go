@@ -75,19 +75,17 @@ func do(action operation, variables map[byte]int) bool {
 	case "add":
 		if action.isBNumber {
 			variables[action.a] += action.b
-			return true
 		} else {
 			variables[action.a] += variables[action.bC]
-			return true
 		}
+		return true
 	case "mul":
 		if action.isBNumber {
 			variables[action.a] *= action.b
-			return true
 		} else {
 			variables[action.a] *= variables[action.bC]
-			return true
 		}
+		return true
 	case "div":
 		if action.isBNumber {
 			if action.b == 0 {
@@ -142,12 +140,21 @@ func do(action operation, variables map[byte]int) bool {
 	return false
 }
 
+func printVariables(variables map[byte]int) string {
+	var result string
+	for k, v := range variables {
+		result += fmt.Sprintf("%c: %d ", k, v)
+	}
+
+	return result
+}
+
 func doSequence(sequence []operation, variables map[byte]int) bool {
 	for _, action := range sequence {
 		if !do(action, variables) {
-			fmt.Println(action, variables)
 			return false
 		}
+		fmt.Println(action, printVariables(variables))
 	}
 
 	return true
@@ -155,13 +162,14 @@ func doSequence(sequence []operation, variables map[byte]int) bool {
 
 func part1(input [][]operation) []int {
 	var number []int
-	for i := 0; i < 14; i++ {
+	for i := 0; i < 1; i++ {
 		for j := 9; j >= 1; j-- {
 			variables := map[byte]int{}
 			variables['w'] = j
-			if !doSequence(input[i], map[byte]int{}) {
+			if !doSequence(input[i], variables) {
 				fmt.Println("Failed for ", j)
 			}
+			fmt.Println(printVariables(variables))
 
 			if variables['z'] == 0 {
 				number = append(number, j)
