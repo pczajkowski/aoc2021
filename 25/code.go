@@ -28,92 +28,84 @@ func readInput(file string) [][]string {
 	return input
 }
 
-func moveEast(input [][]string) bool {
+func moveEast(input [][]string) (bool, [][]string) {
 	changed := false
+	newBoard := make([][]string, len(input))
+	for i := 0; i < len(input); i++ {
+		newBoard[i] = make([]string, len(input[i]))
+	}
+
 	for i := 0; i < len(input); i++ {
 		for j := 0; j < len(input[i]); j++ {
-			if input[i][j] == "." || input[i][j] == "v" {
-				continue
-			}
-
 			if input[i][j] == ">" {
 				if j+1 < len(input[i]) {
 					if input[i][j+1] == "." {
-						input[i][j] = "."
-						input[i][j+1] = ">"
+						newBoard[i][j] = "."
+						newBoard[i][j+1] = ">"
 						changed = true
-						j++
 						continue
 					}
 				} else {
 					if input[i][0] == "." {
-						input[i][j] = "."
-						input[i][0] = ">"
+						newBoard[i][j] = "."
+						newBoard[i][0] = ">"
 						changed = true
 					}
 				}
 			}
+
+			if newBoard[i][j] == "" {
+				newBoard[i][j] = input[i][j]
+			}
 		}
 	}
 
-	return changed
+	return changed, newBoard
 }
 
-type point struct {
-	x, y int
-}
-
-func moveSouth(input [][]string) bool {
+func moveSouth(input [][]string) (bool, [][]string) {
 	changed := false
-	toSkip := make(map[point]bool)
+	newBoard := make([][]string, len(input))
+	for i := 0; i < len(input); i++ {
+		newBoard[i] = make([]string, len(input[i]))
+	}
+
 	for i := 0; i < len(input); i++ {
 		for j := 0; j < len(input[i]); j++ {
-			if toSkip[point{i, j}] {
-				continue
-			}
-
-			if input[i][j] == "." || input[i][j] == ">" {
-				continue
-			}
-
 			if input[i][j] == "v" {
 				if i+1 < len(input) {
 					if input[i+1][j] == "." {
-						input[i][j] = "."
-						input[i+1][j] = "v"
-						toSkip[point{i + 1, j}] = true
+						newBoard[i][j] = "."
+						newBoard[i+1][j] = "v"
 						changed = true
 						continue
 					}
 				} else {
 					if input[0][j] == "." {
-						input[i][j] = "."
-						input[0][j] = "v"
+						newBoard[i][j] = "."
+						newBoard[0][j] = "v"
 						changed = true
+						continue
 					}
 				}
+			}
+
+			if newBoard[i][j] == "" {
+				newBoard[i][j] = input[i][j]
 			}
 		}
 	}
 
-	return changed
-}
-
-func print(input [][]string) {
-	for _, row := range input {
-		fmt.Println(row)
-	}
-	fmt.Println()
+	return changed, newBoard
 }
 
 func part1(input [][]string) int {
-	count := 0
+	count := 1
+	var changedEast, changedSouth bool
 
-	for i := 0; i < 10; i++ {
-		fmt.Println(count)
-		print(input)
-		changedEast := moveEast(input)
-		changedSouth := moveSouth(input)
+	for {
+		changedEast, input = moveEast(input)
+		changedSouth, input = moveSouth(input)
 		if !changedEast && !changedSouth {
 			break
 		}
