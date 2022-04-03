@@ -36,12 +36,12 @@ func readInput(file string) (map[string]int, map[byte]int, map[string][]string) 
 			continue
 		}
 
-		parts := strings.Split(line, " -> ")
-		if len(parts) != 2 {
+		key, value, found := strings.Cut(line, " -> ")
+		if !found {
 			log.Fatal("Invalid line: ", line)
 		}
 
-		input[parts[0]] = []string{fmt.Sprintf("%c%s", parts[0][0], parts[1]), fmt.Sprintf("%s%c", parts[1], parts[0][1])}
+		input[key] = []string{fmt.Sprintf("%c%s", key[0], value), fmt.Sprintf("%s%c", value, key[1])}
 	}
 
 	return template, count, input
